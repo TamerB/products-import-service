@@ -1,0 +1,131 @@
+swagger: "2.0"
+info:
+  description: A service for importing products stocks
+  version: 0.1.0
+  title: E-Commerce Stocks Import
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /readyz:
+    get:
+      tags:
+      - Health
+      operationId: getReadyz
+      produces:
+      - text/plain
+      schemes:
+      - http
+      security: []   # No security
+      responses:
+        200:
+          $ref: '#/responses/stringOkResponse'
+  /healthz:
+    get:
+      tags:
+      - Health
+      operationId: getHealthz
+      produces:
+      - text/plain
+      schemes:
+      - http
+      security: []   # No security
+      responses:
+        200:
+          $ref: '#/responses/stringOkResponse'
+  /products/upload:
+    post:
+      tags:
+      - Bulk
+      summary: "Uploads a CSV file and update stocks"
+      description: "Bulk update products stocks from CSV file"
+      operationId: BulkUpdateProducts
+      consumes:
+        - multipart/form-data
+      parameters:
+        - $ref: "#/parameters/upload"
+      responses:
+        200:
+          $ref: '#/responses/successfulOperationResponse'
+        400:
+          $ref: "#/responses/invalidError"
+        default:
+          $ref: "#/responses/genericError"
+parameters:
+  upload:
+    name: upfile
+    in: formData
+    description: "The CSV file to upload"
+    required: true
+    type: "file"
+responses:  
+  stringOkResponse:
+    description: OK
+    schema:
+      type: "string"
+      enum: [OK]
+  invalidError:
+    description: "Invalid SKU"
+    schema:
+      $ref: '#/definitions/BaseResponse'
+  genericError:
+    description: "Return response with error other than the defined ones"
+    schema:
+      $ref: '#/definitions/BaseResponse'
+  successfulOperationResponse:
+    description: "successful operation"
+    schema:
+      $ref: "#/definitions/BaseResponse"
+definitions:
+  BaseResponse:
+    type: object
+    description: Base response type
+    properties:
+      Success:
+        # This must be present in the response of all microservice APIs
+        type: boolean
+        description: Overall Success of the operation
+        example: false
+      Messages:
+        type: array
+        description: Messages to notify caller while hitting various limits
+        items:
+          $ref: '#/definitions/Message'
+      Errors:
+        # This must be present in the response of all microservice APIs
+        type: array
+        description: Errors encountered. Present only when `Success` is false.
+        items:
+          $ref: '#/definitions/Error'
+  Message:
+    type: object
+    description: Informational message
+    properties:
+      Number:
+        type: integer
+        description: 'The message code to use when communicating about this problem'
+        example: 8001
+      Type:
+        type: string
+        description: 'Type of message, e.g. warning/info'
+        example: Info
+      Text:
+        type: string
+        description: 'A description of this message, which may include formatting specific to this context'
+        example: Location closed
+  Error:
+    type: object
+    description: Error information
+    properties:
+      Number:
+        type: integer
+        description: 'The error code to use when communicating about this problem'
+        example: 8001
+      Text:
+        type: string
+        description: 'A description of this error, which may include formatting specific to this context'
+        example: Some Failure

@@ -13,3 +13,12 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Build
+bin/*
+
+# Local DB tests
+db/sqlc/*_test.go
+
+# Temp file
+tmp/*
