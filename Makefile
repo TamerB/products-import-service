@@ -20,7 +20,7 @@ check_install:
 	which swagger || go get -u github.com/go-swagger/go-swagger/cmd/swagger
 
 generate_server:
-	swagger generate server -f ./swagger.yaml -t ./api -A  stocksTracker
+	swagger generate model -f ./swagger.yaml -t ./api -A  stocksTracker
 
 test:
 	go test -v -race -short -cover ./api/...
